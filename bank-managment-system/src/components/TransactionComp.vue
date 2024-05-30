@@ -1,23 +1,18 @@
 <template>
   <div class="TransactionCompMainContainer">
-    <h1
-      class="TransactionTitle"
-      :class="
-        Color.length > 0
-          ? Color
-          : this.sent
-          ? 'Red'
-          : Title === 'FinsihedRequest'
-          ? 'Green'
-          : Title === 'CompletedRequest'
-          ? 'Red'
-          : ''
-      "
-    >
+    <h1 class="TransactionTitle" :class="Color">
       {{ Title }}
     </h1>
     <h1 class="TransactionName">
-      {{ Name }}
+      {{
+        (Title == "Finished Request" || Title == "Request" || "Canceled Request"
+          ? "From: "
+          : Title == "Send" ||
+            Title == "OutGoing Request" ||
+            Title == "Completed Request"
+          ? "To: "
+          : "") + Name
+      }}
       <ButtonComp
         v-if="Title === 'Request' && !this.sent"
         text="Send"
@@ -25,21 +20,15 @@
         clr="green"
         @click="send()"
       />
+      <ButtonComp
+        v-if="Title === 'Request' && !this.sent"
+        text="Decline"
+        size="Medium"
+        clr="red"
+        @click="decline()"
+      />
     </h1>
-    <h1
-      class="TransactionAmount"
-      :class="
-        Color.length > 0
-          ? Color
-          : this.sent
-          ? 'Red'
-          : Title === 'FinsihedRequest'
-          ? 'Green'
-          : Title === 'CompletedRequest'
-          ? 'Red'
-          : ''
-      "
-    >
+    <h1 class="TransactionAmount" :class="Color">
       {{ Amount + " egp" }}
     </h1>
     <h1 class="TransactionDate">{{ Date }}</h1>
@@ -91,6 +80,10 @@ export default {
       this.$emit("send", [this.Name, this.Amount, this.ID]);
       this.sent = true;
     },
+    decline() {
+      this.$emit("decline", [this.Name, this.Amount, this.ID]);
+      this.sent = false;
+    },
   },
 };
 </script>
@@ -127,6 +120,12 @@ export default {
 .TransactionTitle::before {
   content: "Transaction : ";
   color: black;
+}
+.TransactionDate {
+  font-size: 15px;
+}
+.TransactionAmount {
+  white-space: nowrap;
 }
 .Green {
   color: #447604;

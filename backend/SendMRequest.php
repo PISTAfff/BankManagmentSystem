@@ -8,7 +8,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $UserID = $data["userID"];
     $Name = $data["name"];
     $Amount = $data["amount"];
-    $Color = $data["color"];
     try {
         require_once "dbh.inc.php";
         $query = "SELECT username,amount FROM users WHERE id = :UserID";
@@ -16,8 +15,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(":UserID", $UserID);
         $stmt->execute();
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
-        $RefKey = $res['username'] . ":" . $res['amount'];
-        $currentAmount = $res['amount'] - $Amount;
+        $RefKey = ($res['username'] . ":") . $Amount;
+        $currentAmount = ((int) $res['amount']) - $Amount;
         $query = "UPDATE users SET Amount = :Amount WHERE id = :UserID";
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(":Amount", $currentAmount);
@@ -28,25 +27,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bindParam(":Name", $Name);
         $stmt->execute();
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
-        $currentAmount = $res['amount'];
+        $currentAmount = (int) $res['amount'];
         $currentAmount += $Amount;
         $query = "UPDATE users SET Amount = :Amount WHERE username = :Name";
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(":Amount", $currentAmount);
         $stmt->bindParam(":Name", $Name);
         $stmt->execute();
-        $query = "UPDATE transactions SET type='CompletedRequest' ,State=1,Color='Red' WHERE RefKey=:RefKey";
+
+        $query = "UPDATE transactions SET type='Completed Request',Color='Red', state=1 WHERE RefKey=:RefKey";
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(":RefKey", $RefKey);
         $stmt->execute();
+
         list($name, $number) = explode(":", $RefKey);
         $name = trim($name);
-        $query = "UPDATE transactions SET type='FinsihedRequest' WHERE name=:Name and Amount=:Amount";
+        $query = "UPDATE transactions SET type='Finsihed Request' ,Color='Green' WHERE name=:Name and Amount=:Amount";
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(":Name", $name);
         $stmt->bindParam(":Amount", $Amount);
         $stmt->execute();
-
         echo json_encode(1);
     } catch (PDOException $e) {
         echo json_encode(2);

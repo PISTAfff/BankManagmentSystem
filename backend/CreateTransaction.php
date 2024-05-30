@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         require_once "dbh.inc.php";
         $query = "INSERT INTO transactions(Type, Name, Amount, Date, Color, State, UserID) VALUES(?, ?, ?, ?, ?, ?, ?)";
         $stmt = $pdo->prepare($query);
-        $stmt->execute([$Type === "Request" ? "Outgoing Request" : $Type, $Name, $Amount, $Date, $Color, $State, $UserID]);
+        $stmt->execute([$Type, $Name, $Amount, $Date, $Color, $State, $UserID]);
         $query = "SELECT username,amount FROM users WHERE id = :UserID";
         $stmt = $pdo->prepare($query);
         $stmt->bindParam(":UserID", $UserID);
@@ -68,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->execute(["Received", $senderName, $Amount, $Date, "Green", 0, $res['id']]);
 
                 break;
-            case "Request":
+            case "OutGoing Request":
                 $query = "SELECT id FROM users WHERE username = :Name";
                 $stmt = $pdo->prepare($query);
                 $stmt->bindParam(":Name", $Name);
@@ -76,7 +76,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $res = $stmt->fetch(PDO::FETCH_ASSOC);
                 $query = "INSERT INTO transactions(Type, Name, Amount, Date, Color, State, UserID,RefKey) VALUES(?, ?, ?, ?, ?, ?, ?,?)";
                 $stmt = $pdo->prepare($query);
-                $RefKey = $senderName . ":" . $Amount;
+                $RefKey = $Name . ":" . $Amount;
                 $stmt->execute(["Request", $senderName, $Amount, $Date, "", 0, $res['id'], $RefKey]);
                 break;
         }

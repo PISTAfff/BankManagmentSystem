@@ -63,6 +63,7 @@
         :Color="Transaction[5]"
         :SendState="Transaction[6]"
         @send="SendToRequest($event)"
+        @decline="DeclineRequest($event)"
       />
     </div>
   </div>
@@ -199,6 +200,25 @@ export default {
     ChangeRoute(Route) {
       this.$router.push({ name: Route });
     },
+    DeclineRequest(data) {
+      if (this.isFetching) return;
+      this.isFetching = true;
+      axios
+        .post("http://localhost:8000/DeleteMRequest.php", {
+          name: data[0],
+          amount: parseFloat(data[1]),
+          userID: parseInt(data[2]),
+        })
+        .then((response) => {
+          console.log(response);
+        })
+        .catch(function (error) {
+          console.error("Error:", error);
+        })
+        .finally(() => {
+          this.isFetching = false;
+        });
+    },
     SendToRequest(data) {
       if (this.Balance < parseFloat(data[1])) {
         alert("Insufficent Balance");
@@ -210,9 +230,9 @@ export default {
             name: data[0],
             amount: parseFloat(data[1]),
             userID: parseInt(data[2]),
-            color: "Red",
           })
           .then((response) => {
+            this.Balance -= data[1];
             console.log(response);
           })
           .catch(function (error) {
@@ -252,8 +272,6 @@ export default {
                 Color,
                 false
               );
-            } else {
-              alert(response.data);
             }
           })
           .catch(function (error) {
@@ -275,13 +293,13 @@ export default {
       this.Transactions.push([ID, Title, Name, Amount, Date, Color, State]);
     },
     AddMoney(amount) {
-      if (this.Balance + parseFloat(amount) <= 10000) {
+      if (this.Balance + parseFloat(amount) <= 1000000) {
         this.Balance += parseFloat(amount);
         this.DepositShow = false;
         this.AddTransaction("Deposit", "", parseFloat(amount), "Green");
       } else {
         this.DepositShow = false;
-        alert("The New Balance Cant Pass 10000");
+        alert("The New Balance Cant Pass 1000000");
       }
     },
     WithdrawMoney(amount) {
@@ -316,6 +334,8 @@ export default {
               if (response.data.status === 1) {
                 this.AddTransaction("Send", data[0], data[1], "Red");
                 this.Balance -= parseFloat(data[1]);
+              } else {
+                alert("Failed");
               }
             })
             .catch(function (error) {
@@ -328,7 +348,7 @@ export default {
       }
     },
     RequestMoney(data) {
-      if (this.Balance + parseFloat(data[1]) <= 10000) {
+      if (this.Balance + parseFloat(data[1]) <= 1000000) {
         if (data[1] != this.username) {
           axios
             .get("http://localhost:8000/CheckUsername.php", {
@@ -338,7 +358,9 @@ export default {
             })
             .then((response) => {
               if (response.data.status === 1) {
-                this.AddTransaction("Request", data[0], data[1], "");
+                this.AddTransaction("OutGoing Request", data[0], data[1], "");
+              } else {
+                alert("Failed");
               }
             })
             .catch(function (error) {
@@ -349,7 +371,7 @@ export default {
           alert("You Cant Request Money From Yourself!");
         }
       } else {
-        alert("The New Balance Cant Pass 10000");
+        alert("The New Balance Cant Pass 1000000");
       }
       this.RequestShow = false;
     },

@@ -89,7 +89,6 @@ export default {
     },
     Register() {
       if (this.Username != "Guest") {
-        const ren = /^[a-zA-Z]{3,}$/;
         const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         const rep =
           /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
@@ -98,7 +97,7 @@ export default {
             rep.test(this.Password) &&
             this.Password === this.ConfirmPassword
           ) {
-            if (ren.test(this.Username)) {
+            if (this.Username.length > 8) {
               axios
                 .post("http://localhost:8000/Register.php", {
                   username: this.Username,
