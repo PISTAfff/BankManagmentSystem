@@ -125,7 +125,7 @@ export default {
   },
   created() {
     try {
-      if (localStorage.getItem("Logged") == 1) {
+      if (localStorage.getItem("Logged") == 0) {
         alert("You Need To Register To Use The Application");
         this.$router.push({ name: "Register" });
       }
