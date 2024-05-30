@@ -88,37 +88,44 @@ export default {
       this.$router.push({ name: "Home" });
     },
     Register() {
-      const ren = /^[a-zA-Z]{3,}$/;
-      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const rep =
-        /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
-      if (re.test(this.Email)) {
-        if (rep.test(this.Password) && this.Password === this.ConfirmPassword) {
-          if (ren.test(this.Username)) {
-            axios
-              .post("http://localhost:8000/Register.php", {
-                username: this.Username,
-                email: this.Email,
-                password: this.Password,
-              })
-              .then((response) => {
-                if (response.data.state == 1) {
-                  this.Login(response.data.userid);
-                } else if (response.data.state == 2) {
-                  alert("Account Exists Already");
-                }
-              })
-              .catch(function (error) {
-                console.error("Error:", error);
-              });
+      if (this.Username != "Guest") {
+        const ren = /^[a-zA-Z]{3,}$/;
+        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        const rep =
+          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+        if (re.test(this.Email)) {
+          if (
+            rep.test(this.Password) &&
+            this.Password === this.ConfirmPassword
+          ) {
+            if (ren.test(this.Username)) {
+              axios
+                .post("http://localhost:8000/Register.php", {
+                  username: this.Username,
+                  email: this.Email,
+                  password: this.Password,
+                })
+                .then((response) => {
+                  if (response.data.state == 1) {
+                    this.Login(response.data.userid);
+                  } else if (response.data.state == 2) {
+                    alert("Account Exists Already");
+                  }
+                })
+                .catch(function (error) {
+                  console.error("Error:", error);
+                });
+            } else {
+              alert("Username Is Invalid");
+            }
           } else {
-            alert("Username Is Invalid");
+            alert("Password Is Invalid");
           }
         } else {
-          alert("Password Is Invalid");
+          alert("Email Is Invalid");
         }
       } else {
-        alert("Email Is Invalid");
+        alert("Cant Use This Name!");
       }
     },
   },

@@ -126,14 +126,12 @@ export default {
   created() {
     try {
       if (localStorage.getItem("Logged") == 0) {
-        alert("You Need To Register To Use The Application");
-        this.$router.push({ name: "Register" });
+        alert("You Need To Register To Use All The Application Features");
       }
     } catch (E) {
       localStorage.setItem("Logged", 0);
+      this.Refresh();
     }
-
-    this.Refresh();
   },
   mounted() {
     localStorage.setItem("Refresh", 5);
@@ -232,34 +230,46 @@ export default {
       return `${day}/${month}`;
     },
     AddTransaction(Title, Name, Amount, Color) {
-      axios
-        .post("http://localhost:8000/CreateTransaction.php", {
-          userID: parseInt(localStorage.getItem("UserID")),
-          type: Title,
-          name: Name,
-          amount: parseFloat(Amount),
-          date: this.getDate(),
-          color: Color,
-          sendState: 0,
-        })
-        .then((response) => {
-          if (response.data == 1) {
-            this.AddTransactionToArray(
-              localStorage.getItem("UserID"),
-              Title,
-              Name,
-              Amount,
-              this.getDate(),
-              Color,
-              false
-            );
-          } else {
-            alert(response.data);
-          }
-        })
-        .catch(function (error) {
-          console.error("Error:", error);
-        });
+      if (this.username != "Guest") {
+        axios
+          .post("http://localhost:8000/CreateTransaction.php", {
+            userID: parseInt(localStorage.getItem("UserID")),
+            type: Title,
+            name: Name,
+            amount: parseFloat(Amount),
+            date: this.getDate(),
+            color: Color,
+            sendState: 0,
+          })
+          .then((response) => {
+            if (response.data == 1) {
+              this.AddTransactionToArray(
+                localStorage.getItem("UserID"),
+                Title,
+                Name,
+                Amount,
+                this.getDate(),
+                Color,
+                false
+              );
+            } else {
+              alert(response.data);
+            }
+          })
+          .catch(function (error) {
+            console.error("Error:", error);
+          });
+      } else {
+        this.AddTransactionToArray(
+          localStorage.getItem("UserID"),
+          Title,
+          Name,
+          Amount,
+          this.getDate(),
+          Color,
+          false
+        );
+      }
     },
     AddTransactionToArray(ID, Title, Name, Amount, Date, Color, State) {
       this.Transactions.push([ID, Title, Name, Amount, Date, Color, State]);
@@ -295,51 +305,67 @@ export default {
         alert("Insufficent Balance");
         this.SendShow = false;
       } else {
-        axios
-          .get("http://localhost:8000/CheckUsername.php", {
-            params: {
-              name: data[0],
-            },
-          })
-          .then((response) => {
-            if (response.data.status === 1) {
-              this.AddTransaction("Send", data[0], data[1], "Red");
-              this.Balance -= parseFloat(data[1]);
-            }
-          })
-          .catch(function (error) {
-            console.error("Error:", error);
-          });
-        this.SendShow = false;
+        if (data[1] != this.username) {
+          axios
+            .get("http://localhost:8000/CheckUsername.php", {
+              params: {
+                name: data[0],
+              },
+            })
+            .then((response) => {
+              if (response.data.status === 1) {
+                this.AddTransaction("Send", data[0], data[1], "Red");
+                this.Balance -= parseFloat(data[1]);
+              }
+            })
+            .catch(function (error) {
+              console.error("Error:", error);
+            });
+          this.SendShow = false;
+        } else {
+          alert("You Cant Send Money To Yourself!");
+        }
       }
     },
     RequestMoney(data) {
       if (this.Balance + parseFloat(data[1]) <= 10000) {
-        axios
-          .get("http://localhost:8000/CheckUsername.php", {
-            params: {
-              name: data[0],
-            },
-          })
-          .then((response) => {
-            if (response.data.status === 1) {
-              this.AddTransaction("Request", data[0], data[1], "");
-            }
-          })
-          .catch(function (error) {
-            console.error("Error:", error);
-          });
-        this.RequestShow = false;
+        if (data[1] != this.username) {
+          axios
+            .get("http://localhost:8000/CheckUsername.php", {
+              params: {
+                name: data[0],
+              },
+            })
+            .then((response) => {
+              if (response.data.status === 1) {
+                this.AddTransaction("Request", data[0], data[1], "");
+              }
+            })
+            .catch(function (error) {
+              console.error("Error:", error);
+            });
+          this.RequestShow = false;
+        } else {
+          alert("You Cant Request Money From Yourself!");
+        }
       } else {
         alert("The New Balance Cant Pass 10000");
       }
       this.RequestShow = false;
     },
     Request() {
-      this.RequestShow = true;
+      if (this.username != "Guest") {
+        this.RequestShow = true;
+      } else {
+        alert("Register To Unlock This feature");
+      }
     },
     Send() {
-      this.SendShow = true;
+      if (this.username != "Guest") {
+        this.SendShow = true;
+      } else {
+        alert("Register To Unlock This feature");
+      }
     },
     Cancel() {
       this.DepositShow = false;
