@@ -103,7 +103,7 @@ export default {
   data() {
     return {
       Balance:
-        localStorage.getItem("Email").length > 0
+        localStorage.getItem("Logged") == 1
           ? parseFloat(localStorage.getItem("Amount"))
           : 250,
       DepositShow: false,
@@ -111,19 +111,28 @@ export default {
       SendShow: false,
       RequestShow: false,
       username:
-        localStorage.getItem("Email").length > 0
+        localStorage.getItem("Logged") == 1
           ? localStorage.getItem("Username")
           : "Guest",
       Transactionstemp:
-        localStorage.getItem("Email").length > 0
+        localStorage.getItem("Logged") == 1
           ? localStorage.getItem("Transactions")
           : [],
       Transactions: [],
-      logged: localStorage.getItem("Email").length > 0,
+      logged: localStorage.getItem("Logged") == 1 ? 1 : 0,
       isFetching: false,
     };
   },
   created() {
+    try {
+      if (localStorage.getItem("Logged") == 1) {
+        alert("You Need To Register To Use The Application");
+        this.$router.push({ name: "Register" });
+      }
+    } catch (E) {
+      localStorage.setItem("Logged", 0);
+    }
+
     this.Refresh();
   },
   mounted() {
@@ -133,58 +142,57 @@ export default {
 
   methods: {
     Refresh() {
-      if (localStorage.getItem("Refresh") > 0) {
-        axios
-          .get("http://localhost:8000/Refresh.php", {
-            params: {
-              email: localStorage.getItem("Email"),
-            },
-          })
-          .then((response) => {
-            if (response.data.State == 1) {
-              localStorage.setItem("UserID", response.data.id);
-              localStorage.setItem("Username", response.data.Username);
-              localStorage.setItem("Amount", response.data.Amount);
-              localStorage.setItem(
-                "Transactions",
-                JSON.stringify(response.data.Transactions)
-              );
-              console.log(response.data.Transactions);
-            } else if (response.data.State == 0) {
-              alert("Wrong Password");
-            }
-          })
-          .catch(function (error) {
-            console.error("Error:", error);
+      if (this.logged) {
+        if (localStorage.getItem("Refresh") > 0) {
+          axios
+            .get("http://localhost:8000/Refresh.php", {
+              params: {
+                email: localStorage.getItem("Email"),
+              },
+            })
+            .then((response) => {
+              if (response.data.State == 1) {
+                localStorage.setItem("UserID", response.data.id);
+                localStorage.setItem("Username", response.data.Username);
+                localStorage.setItem("Amount", response.data.Amount);
+                localStorage.setItem(
+                  "Transactions",
+                  JSON.stringify(response.data.Transactions)
+                );
+                console.log(response.data.Transactions);
+              } else if (response.data.State == 0) {
+                alert("Wrong Password");
+              }
+            })
+            .catch(function (error) {
+              console.error("Error:", error);
+            });
+          this.username =
+            localStorage.getItem("Email").length > 0
+              ? localStorage.getItem("Username")
+              : "Guest";
+          this.Transactions = [];
+          const parsed = JSON.parse(localStorage.getItem("Transactions"));
+          parsed.forEach((trans) => {
+            this.AddTransactionToArray(
+              trans.UserID,
+              trans.Type,
+              trans.Name,
+              trans.Amount,
+              trans.Date,
+              trans.Color,
+              trans.State
+            );
           });
-        this.username =
-          localStorage.getItem("Email").length > 0
-            ? localStorage.getItem("Username")
-            : "Guest";
-        this.Transactions = [];
-        const parsed = JSON.parse(localStorage.getItem("Transactions"));
-        parsed.forEach((trans) => {
-          this.AddTransactionToArray(
-            trans.UserID,
-            trans.Type,
-            trans.Name,
-            trans.Amount,
-            trans.Date,
-            trans.Color,
-            trans.State
-          );
-        });
-        this.logged = localStorage.getItem("Email").length > 0;
-        const r = localStorage.getItem("Refresh") - 1;
-        localStorage.setItem("Refresh", r);
+          this.logged = localStorage.getItem("Email").length > 0;
+          const r = localStorage.getItem("Refresh") - 1;
+          localStorage.setItem("Refresh", r);
+        }
       }
     },
     Logout() {
-      localStorage.setItem("UserID", -1);
-      localStorage.setItem("Email", "");
-      localStorage.setItem("Username", "");
-      localStorage.setItem("Amount", "");
-      localStorage.setItem("Transactions", "");
+      localStorage.clear();
+      localStorage.setItem("Logged", 0);
       this.Transactions = [];
       this.username = "Guest";
       this.Balance = 250;

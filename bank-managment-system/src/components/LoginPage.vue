@@ -50,6 +50,8 @@ export default {
       localStorage.setItem("Username", "Guest");
       localStorage.setItem("Amount", 0);
       localStorage.setItem("Transactions", JSON.stringify([]));
+      localStorage.setItem("Logged", 0);
+
       this.$router.push({ name: "Home" });
     },
     Login() {
@@ -83,6 +85,8 @@ export default {
               console.error("Error:", error);
             })
             .finally(() => {
+              localStorage.setItem("Logged", 1);
+
               this.$router.push({ name: "Home" });
             });
         } else {
