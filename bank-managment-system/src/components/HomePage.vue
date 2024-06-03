@@ -125,14 +125,7 @@ export default {
     };
   },
   created() {
-    try {
-      if (localStorage.getItem("Logged") == 0) {
-        alert("You Need To Register To Use All The Application Features");
-      }
-    } catch (E) {
-      localStorage.setItem("Logged", 0);
-      this.Refresh();
-    }
+    this.Refresh();
   },
   mounted() {
     localStorage.setItem("Refresh", 5);

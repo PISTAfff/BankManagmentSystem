@@ -1,8 +1,8 @@
 <?php
 
-$dsn = "mysql:host=localhost;port=3306;dbname=bankmanagmentsystem";
-$dbusername = "root";
-$dbpassword = "Pista123$?$";
+$dsn = $_ENV["DSN"];
+$dbusername = $_ENV["DBUSERNAME"];
+$dbpassword = $_ENV["DBPSWD"];
 try {
     $pdo = new PDO($dsn, $dbusername, $dbpassword);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
