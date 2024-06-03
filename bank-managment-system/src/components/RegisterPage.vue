@@ -99,7 +99,7 @@ export default {
           ) {
             if (this.Username.length > 8) {
               axios
-                .post("https://pista.infinityfreeapp.com/Register", {
+                .post("http://pista.infinityfreeapp.com/Register", {
                   username: this.Username,
                   email: this.Email,
                   password: this.Password,
