@@ -137,7 +137,7 @@ export default {
       if (this.logged) {
         if (localStorage.getItem("Refresh") > 0) {
           axios
-            .get("http://localhost:8000/Refresh.php", {
+            .get("http://pista.infinityfreeapp.com/Refresh", {
               params: {
                 email: localStorage.getItem("Email"),
               },
@@ -197,7 +197,7 @@ export default {
       if (this.isFetching) return;
       this.isFetching = true;
       axios
-        .post("http://localhost:8000/DeleteMRequest.php", {
+        .post("http://pista.infinityfreeapp.com/DeleteMRequest", {
           name: data[0],
           amount: parseFloat(data[1]),
           userID: parseInt(data[2]),
@@ -219,7 +219,7 @@ export default {
         if (this.isFetching) return;
         this.isFetching = true;
         axios
-          .post("http://localhost:8000/SendMRequest.php", {
+          .post("http://pista.infinityfreeapp.com/SendMRequest", {
             name: data[0],
             amount: parseFloat(data[1]),
             userID: parseInt(data[2]),
@@ -245,7 +245,7 @@ export default {
     AddTransaction(Title, Name, Amount, Color) {
       if (this.username != "Guest") {
         axios
-          .post("http://localhost:8000/CreateTransaction.php", {
+          .post("http://pista.infinityfreeapp.com/CreateTransaction", {
             userID: parseInt(localStorage.getItem("UserID")),
             type: Title,
             name: Name,
@@ -318,7 +318,7 @@ export default {
       } else {
         if (data[1] != this.username) {
           axios
-            .get("http://localhost:8000/CheckUsername.php", {
+            .get("http://pista.infinityfreeapp.com/CheckUsername", {
               params: {
                 name: data[0],
               },
@@ -344,7 +344,7 @@ export default {
       if (this.Balance + parseFloat(data[1]) <= 1000000) {
         if (data[1] != this.username) {
           axios
-            .get("http://localhost:8000/CheckUsername.php", {
+            .get("http://pista.infinityfreeapp.com/CheckUsername", {
               params: {
                 name: data[0],
               },
