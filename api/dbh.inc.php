@@ -4,7 +4,7 @@
 // $dbusername = $_ENV["DBUSERNAME"];
 // $dbpassword = $_ENV["DBPSWD"];
 
-$dsn = "mysql:host=sql8.freemysqlhosting.netport=3306;dbname=sql8711485";
+$dsn = "mysql:host=sql8.freemysqlhosting.net;port=3306;dbname=sql8711485";
 $dbusername = "sql8711485";
 $dbpassword = "rbPhrsUKTn";
 
