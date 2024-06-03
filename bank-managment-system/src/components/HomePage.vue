@@ -137,7 +137,7 @@ export default {
       if (this.logged) {
         if (localStorage.getItem("Refresh") > 0) {
           axios
-            .get("http://https://phpbackendbanksystem.vercel.app/Refresh", {
+            .get("http://localhost:8000/Refresh.php", {
               params: {
                 email: localStorage.getItem("Email"),
               },
@@ -197,7 +197,7 @@ export default {
       if (this.isFetching) return;
       this.isFetching = true;
       axios
-        .post("http://https://phpbackendbanksystem.vercel.app/DeleteMRequest", {
+        .post("http://localhost:8000/DeleteMRequest.php", {
           name: data[0],
           amount: parseFloat(data[1]),
           userID: parseInt(data[2]),
@@ -219,7 +219,7 @@ export default {
         if (this.isFetching) return;
         this.isFetching = true;
         axios
-          .post("http://https://phpbackendbanksystem.vercel.app/SendMRequest", {
+          .post("http://localhost:8000/SendMRequest.php", {
             name: data[0],
             amount: parseFloat(data[1]),
             userID: parseInt(data[2]),
@@ -245,7 +245,7 @@ export default {
     AddTransaction(Title, Name, Amount, Color) {
       if (this.username != "Guest") {
         axios
-          .post("http://https://phpbackendbanksystem.vercel.app/CreateTransaction", {
+          .post("http://localhost:8000/CreateTransaction.php", {
             userID: parseInt(localStorage.getItem("UserID")),
             type: Title,
             name: Name,
@@ -318,7 +318,7 @@ export default {
       } else {
         if (data[1] != this.username) {
           axios
-            .get("http://https://phpbackendbanksystem.vercel.app/CheckUsername", {
+            .get("http://localhost:8000/CheckUsername.php", {
               params: {
                 name: data[0],
               },
@@ -344,7 +344,7 @@ export default {
       if (this.Balance + parseFloat(data[1]) <= 1000000) {
         if (data[1] != this.username) {
           axios
-            .get("http://https://phpbackendbanksystem.vercel.app/CheckUsername", {
+            .get("http://localhost:8000/CheckUsername.php", {
               params: {
                 name: data[0],
               },
