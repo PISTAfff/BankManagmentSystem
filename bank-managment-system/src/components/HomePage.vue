@@ -137,7 +137,7 @@ export default {
       if (this.logged) {
         if (localStorage.getItem("Refresh") > 0) {
           axios
-            .get("https://pista.infinityfreeapp.com/Refresh.php", {
+            .get("https://pista.infinityfreeapp.com/Refresh", {
               params: {
                 email: localStorage.getItem("Email"),
               },
@@ -197,7 +197,7 @@ export default {
       if (this.isFetching) return;
       this.isFetching = true;
       axios
-        .post("https://pista.infinityfreeapp.com/DeleteMRequest.php", {
+        .post("https://pista.infinityfreeapp.com/DeleteMRequest", {
           name: data[0],
           amount: parseFloat(data[1]),
           userID: parseInt(data[2]),
@@ -219,7 +219,7 @@ export default {
         if (this.isFetching) return;
         this.isFetching = true;
         axios
-          .post("https://pista.infinityfreeapp.com/SendMRequest.php", {
+          .post("https://pista.infinityfreeapp.com/SendMRequest", {
             name: data[0],
             amount: parseFloat(data[1]),
             userID: parseInt(data[2]),
@@ -245,7 +245,7 @@ export default {
     AddTransaction(Title, Name, Amount, Color) {
       if (this.username != "Guest") {
         axios
-          .post("https://pista.infinityfreeapp.com/CreateTransaction.php", {
+          .post("https://pista.infinityfreeapp.com/CreateTransaction", {
             userID: parseInt(localStorage.getItem("UserID")),
             type: Title,
             name: Name,
@@ -318,7 +318,7 @@ export default {
       } else {
         if (data[1] != this.username) {
           axios
-            .get("https://pista.infinityfreeapp.com/CheckUsername.php", {
+            .get("https://pista.infinityfreeapp.com/CheckUsername", {
               params: {
                 name: data[0],
               },
@@ -344,7 +344,7 @@ export default {
       if (this.Balance + parseFloat(data[1]) <= 1000000) {
         if (data[1] != this.username) {
           axios
-            .get("https://pista.infinityfreeapp.com/CheckUsername.php", {
+            .get("https://pista.infinityfreeapp.com/CheckUsername", {
               params: {
                 name: data[0],
               },

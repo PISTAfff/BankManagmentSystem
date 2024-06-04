@@ -61,7 +61,7 @@ export default {
       if (re.test(this.Email)) {
         if (rep.test(this.Password)) {
           axios
-            .get("https://pista.infinityfreeapp.com/Login.php", {
+            .get("https://pista.infinityfreeapp.com/Login", {
               params: {
                 email: this.Email,
                 password: this.Password,
